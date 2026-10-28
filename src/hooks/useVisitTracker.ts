@@ -33,7 +33,12 @@ export const useVisitTracker = () => {
       try {
         const visitorId = getVisitorId();
         const userData = localStorage.getItem("user");
-        const user = userData ? JSON.parse(userData) : null;
+        let user: any = null;
+        try {
+          user = userData ? JSON.parse(userData) : null;
+        } catch {
+          user = null;
+        }
         const username = user?.username || user?.email || `guest_${visitorId}`;
         const now = Date.now();
         const lastVisit = getLastVisit();
