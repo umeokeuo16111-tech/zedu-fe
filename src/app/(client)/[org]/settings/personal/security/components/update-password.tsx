@@ -11,6 +11,9 @@ import {
 import { PutRequest } from "~/utils/new-request";
 import { showError, showSuccess } from "~/components/toast/sonner";
 import Loading from "~/components/ui/loading";
+
+const MIN_PASSWORD_LENGTH = 7;
+
 const UpdatePassword = () => {
   const [open, setOpen] = useState(false);
   const [buttonLoading, setButtonLoading] = useState(false);
@@ -24,8 +27,16 @@ const UpdatePassword = () => {
   const canSubmit =
     oldPassword !== "" && newPassword !== "" && confirmPassword !== "";
 
+  const newPasswordTooShort =
+    newPassword.length > 0 && newPassword.length < MIN_PASSWORD_LENGTH;
+
   const handleSaveNewPassword = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (newPassword.length < MIN_PASSWORD_LENGTH) {
+      showError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters`);
+      return;
+    }
 
     if (newPassword !== confirmPassword) {
       showError("Password does not match");
@@ -115,6 +126,8 @@ const UpdatePassword = () => {
                   className="w-full border rounded px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-purple-500"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
+                  aria-describedby="new-password-hint"
+                  aria-invalid={newPasswordTooShort}
                 />
                 <button
                   type="button"
@@ -124,6 +137,14 @@ const UpdatePassword = () => {
                   {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+              <p
+                id="new-password-hint"
+                className={`mt-1 text-xs ${
+                  newPasswordTooShort ? "text-red-600" : "text-gray-500"
+                }`}
+              >
+                Password must be at least {MIN_PASSWORD_LENGTH} characters
+              </p>
             </div>
 
             <div className="mb-4">
